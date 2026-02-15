@@ -1,7 +1,8 @@
 export { Room } from "./room";
 
-interface Env {
+export interface Env {
   ROOM: DurableObjectNamespace;
+  AI: Ai;
 }
 
 const CORS_HEADERS: Record<string, string> = {

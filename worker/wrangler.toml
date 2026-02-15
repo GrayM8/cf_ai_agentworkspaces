@@ -13,9 +13,9 @@ bindings = [
 tag = "v1"
 new_classes = ["Room"]
 
-# ---------- Workers AI (placeholder — uncomment when ready) ----------
-# [ai]
-# binding = "AI"
+# ---------- Workers AI ----------
+[ai]
+binding = "AI"
 
 # ---------- Environment Variables ----------
 # [vars]

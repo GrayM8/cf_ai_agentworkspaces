@@ -184,3 +184,107 @@ Finally, print:
 - Any new constants/timers and why they’re chosen
 ```
 
+Prompt 4.
+```aiignore
+We are implementing AI participation + shared room memory in EdgeRooms.
+
+Goal:
+- Add Workers AI integration
+- Add structured pinned memory in the Durable Object
+- Add minimal commands
+- Keep changes incremental and clean
+- No vector database yet
+- No persistence beyond DO state
+
+## Backend changes (worker/)
+
+### 1. Add pinned memory structure to Room DO state
+In worker/src/room.ts:
+
+Add:
+pinned = {
+  goal?: string,
+  facts: string[],
+  decisions: string[],
+  todos: string[]
+}
+
+Initialize safely on first use.
+
+### 2. Add command handling in webSocketMessage
+When receiving a chat message:
+
+If text starts with:
+- "/remember " → append remainder to pinned.facts
+- "/decide " → append remainder to pinned.decisions
+- "/summarize" → trigger AI summary of recent discussion
+- "@ai " → trigger AI response
+
+Commands should:
+- update pinned state
+- broadcast updated presence OR memory update event
+- optionally broadcast a system confirmation message
+
+Do NOT yet persist to storage.
+
+### 3. Integrate Workers AI
+
+In wrangler.toml:
+- Add AI binding properly (not commented out).
+Use the official Workers AI binding.
+
+In index.ts:
+- Ensure Env interface includes AI binding.
+
+In Room:
+- Add async method callAI(prompt: string)
+
+Prompt structure:
+SYSTEM:
+"You are the AI host of a collaborative chat room.
+You help summarize, clarify decisions, and answer questions.
+Be concise."
+
+Include:
+- Pinned memory formatted cleanly
+- Last 20 messages formatted as "User: text"
+
+Call model:
+@cf/meta/llama-3.3-70b-instruct (or current recommended model if needed)
+
+Return text response only.
+
+### 4. Broadcast AI message
+When AI is triggered:
+- Append AI message as:
+  {
+    type: "chat",
+    user: "AI",
+    text: "...",
+    ts: Date.now()
+  }
+- Broadcast to all clients.
+
+Prevent AI storm:
+- Ensure only one AI call runs at a time per room.
+- If another AI request happens while one is running, ignore it.
+
+## Frontend (web/)
+- No major UI changes required.
+- Just ensure AI messages render normally.
+- Optionally render AI user differently (light styling only).
+
+## Deliverables
+After implementing:
+- List files changed
+- Provide example manual test sequence:
+  - connect two tabs
+  - /remember something
+  - @ai what did we remember?
+  - /summarize
+- Confirm Workers AI is being called successfully
+- Show sample prompt being sent (sanitized)
+
+Keep code clean and readable.
+```
+

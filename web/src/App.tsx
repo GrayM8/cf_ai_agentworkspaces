@@ -180,14 +180,25 @@ export default function App() {
           background: "#fafafa",
         }}
       >
-        {messages.map((m, i) => (
-          <div key={i} style={{ marginBottom: "0.25rem" }}>
-            <strong>{m.user}</strong>: {m.text}
-            <span style={{ color: "#999", fontSize: "0.75rem", marginLeft: 8 }}>
-              {new Date(m.ts).toLocaleTimeString()}
-            </span>
-          </div>
-        ))}
+        {messages.map((m, i) => {
+          const isAI = m.user === "AI";
+          const isSystem = m.user === "System";
+          return (
+            <div
+              key={i}
+              style={{
+                marginBottom: "0.25rem",
+                ...(isSystem ? { color: "#888", fontStyle: "italic", fontSize: "0.85rem" } : {}),
+                ...(isAI ? { background: "#e8f4fd", padding: "0.25rem 0.4rem", borderRadius: 3 } : {}),
+              }}
+            >
+              <strong>{m.user}</strong>: {m.text}
+              <span style={{ color: "#999", fontSize: "0.75rem", marginLeft: 8 }}>
+                {new Date(m.ts).toLocaleTimeString()}
+              </span>
+            </div>
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
