@@ -461,3 +461,36 @@ Prompt 8.
 ```aiignore
 Create a popup from the chat interface that appears when / is typed, displaying all of the defined / commands and their functionality.
 ```
+
+Prompt 9.
+```aiignore
+  Redesign the home/splash page (web/src/Splash.tsx) of my Cloudflare Workers collaboration app. The current page is a flat stack of inputs centered
+   on a dark void with no visual character. Keep all existing functionality intact (display name input, create room button, join room with ID       
+  input). The project uses Tailwind CSS v4, React 19, and has no animation libraries.                                                               
+   
+  Design direction: Refined, atmospheric dark interface with subtle depth — not brutalist, not generic SaaS. Think sophisticated command console.   
+                                                                               
+  Specific requirements:
+
+  1. Typography: Add a Google Fonts stylesheet to index.html. Set up three font families as CSS custom properties in index.css: a serif display font
+   for the title (something unexpected for a tech tool that creates contrast), a clean geometric sans-serif for body/UI text, and a monospace font
+  for code-like values (room IDs). Apply the body font globally with antialiasing.
+  2. Background atmosphere: Add layered background effects behind the content — subtle colored radial blurs (emerald and sky tones to match the
+  app's existing accent colors) plus a faint dot-grid texture overlay. All pointer-events-none.
+  3. Layout: Group the inputs and buttons inside a single card container with a frosted glass effect (border, backdrop-blur, subtle shadow), rather
+  than having them float freely. Keep the hero (icon + title + subtitle) above the card. Add small feature badges below the card as a footer.
+  4. Animations: Define CSS keyframe animations in index.css (no JS animation libraries) for a staggered entrance effect — the hero, card, and
+  footer should rise/fade in sequentially with ~100ms delays between them. Also add a soft pulsing animation for a small status dot.
+  5. Polish details:
+    - Small branded icon mark (sparkle/star SVG) above the title in an emerald-tinted container with a ring
+    - Title rendered in the serif display font at text-5xl
+    - Create button in emerald-600 with hover shadow glow and active:scale press effect
+    - Room ID input styled in the monospace font
+    - Inputs use border-based styling with focus transitions (border lightens, background deepens)
+    - Divider text as uppercase tracking-widest "or join"
+    - Footer hints with inline SVG icons for "AI-powered" (with breathing dot), "End-to-end on Cloudflare" (shield), and "Real-time collaboration"
+  (users)
+  6. Global CSS changes: Add the font stack custom properties, body font-family declaration, and the keyframe animations to index.css while keeping
+  the existing scrollbar styles untouched.
+```
+
