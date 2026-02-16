@@ -17,7 +17,7 @@ export function RoomView({ roomId }: { roomId: string }) {
   const [displayName, setDisplayName] = useState(
     () => localStorage.getItem(DISPLAY_NAME_KEY) || randomName(),
   );
-  const room = useRoom(roomId, displayName);
+  const room = useRoom(roomId, displayName, true);
   const connected = room.status === "connected";
 
   // Persist display name changes
@@ -26,11 +26,6 @@ export function RoomView({ roomId }: { roomId: string }) {
       localStorage.setItem(DISPLAY_NAME_KEY, displayName.trim());
     }
   }, [displayName]);
-
-  // Auto-connect on mount
-  useEffect(() => {
-    room.connect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDisconnect = () => {
     room.disconnect();
@@ -75,8 +70,20 @@ export function RoomView({ roomId }: { roomId: string }) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 items-center justify-center text-zinc-500">
-          <p>Connecting to room...</p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-zinc-500">
+          {room.status === "connecting" ? (
+            <p>Connecting to room...</p>
+          ) : (
+            <>
+              <p>Failed to connect to room.</p>
+              <button
+                onClick={() => room.connect()}
+                className="rounded bg-zinc-800 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-700"
+              >
+                Retry
+              </button>
+            </>
+          )}
         </div>
       )}
 

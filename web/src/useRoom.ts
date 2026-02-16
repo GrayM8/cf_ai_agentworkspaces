@@ -16,7 +16,7 @@ function getClientId(): string {
 
 export const CLIENT_ID = getClientId();
 
-export function useRoom(roomId: string, displayName: string) {
+export function useRoom(roomId: string, displayName: string, autoConnect = false) {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [presence, setPresence] = useState(0);
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
@@ -113,6 +113,13 @@ export function useRoom(roomId: string, displayName: string) {
     });
     ws.addEventListener("error", () => {});
   }, [roomId]);
+
+  // Auto-connect on mount when requested (works safely with StrictMode)
+  useEffect(() => {
+    if (!autoConnect) return;
+    connect();
+    return () => { closeSocket(); };
+  }, [autoConnect, connect, closeSocket]);
 
   const disconnect = useCallback(() => { closeSocket(); setStatus("disconnected"); }, [closeSocket]);
 
