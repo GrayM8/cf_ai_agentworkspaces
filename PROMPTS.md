@@ -515,3 +515,37 @@ Redesign all room page components (Header, ChatPanel, SidePanel, MemoryTab, Arti
   Use backdrop-blur-sm and /60 border opacity throughout for atmospheric depth. Quick actions as bordered chips with transition hovers. All metadata
    timestamps and IDs in var(--font-mono).
 ```
+
+Prompt 11.
+```aiignore
+Bug: AI context + /summarize behave as if they cannot see chat before the last AI reply.
+Example: Ask a question, AI answers, then immediately run /summarize → it says there is no recent discussion.
+
+This is likely caused by context selection using a “since last AI” cursor (lastAiTs/lastAiIndex/lastSummarizedIndex), resulting in empty context.
+
+Task:
+1) Inspect worker/src/room.ts for any logic that filters messages “since last AI reply” or “since last summarize”.
+2) Change prompt/context selection so that BOTH:
+   - @ai <question>
+   - /summarize
+   always include the last N chat messages (e.g. last 30–50) regardless of last AI call.
+
+Rules:
+- Use the authoritative chat history buffer (the same one you append to for normal chat).
+- Include both user + AI chat messages in context.
+- Exclude system messages from the context window (optional) unless helpful.
+- /summarize should summarize the last N messages even if no new messages occurred since last AI response.
+
+3) Add minimal diagnostics:
+- When building an AI prompt, log:
+  - total chat messages in history
+  - selected messages count
+  - timestamps range
+  - whether any cursor was applied
+
+Deliverable:
+- Explain what caused the bug (which cursor/filter).
+- Confirm with manual test:
+  - send 3 messages, @ai responds
+  - run /summarize, should summarize those messages (not say “no discussion”)
+```

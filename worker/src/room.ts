@@ -4,7 +4,7 @@ import type { Env } from "./index";
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const STALE_TIMEOUT_MS = 45_000;
 const MAX_HISTORY = 50;
-const AI_CONTEXT_MESSAGES = 20;
+const AI_CONTEXT_MESSAGES = 30;
 const AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 const HISTORY_FLUSH_INTERVAL = 5;
 const PINNED_FLUSH_DELAY_MS = 1000;
@@ -96,8 +96,10 @@ export class Room extends DurableObject<Env> {
       return;
     }
 
+    // Always reload state after hibernation (all fields reset to defaults)
+    await this.ensureLoaded();
+
     if (type === "hello") {
-      await this.ensureLoaded();
       const clientId = typeof msg.clientId === "string" ? msg.clientId : null;
       const userName = typeof msg.user === "string" ? msg.user : "Anonymous";
       if (clientId) {
@@ -329,7 +331,11 @@ export class Room extends DurableObject<Env> {
     this.aiRunning = true;
     this.broadcastSystem("AI is thinking...");
     this.callAI(userPrompt)
-      .then((response) => this.broadcastChat("AI", response))
+      .then((response) => {
+        this.broadcastChat("AI", response);
+        this.ctx.storage.put(SK_HISTORY, this.history);
+        this.historyDirty = 0;
+      })
       .catch((err) => {
         console.log(`[room] AI error: ${err}`);
         this.broadcastSystem(`AI error: ${String(err)}`);
@@ -339,7 +345,8 @@ export class Room extends DurableObject<Env> {
 
   private async callAI(userPrompt: string): Promise<string> {
     const memoryBlock = this.formatPinnedMemory();
-    const recentMessages = this.history.slice(-AI_CONTEXT_MESSAGES).map((m) => `${m.user}: ${m.text}`).join("\n");
+    const selected = this.history.slice(-AI_CONTEXT_MESSAGES);
+    const recentMessages = selected.map((m) => `${m.user}: ${m.text}`).join("\n");
     const systemPrompt = [
       "You are the AI host of a collaborative chat room called AgentWorkspaces.",
       "You help summarize and answer questions. Be concise and helpful.",
@@ -348,7 +355,12 @@ export class Room extends DurableObject<Env> {
       "",
       recentMessages ? `## Recent Messages\n${recentMessages}` : "## Recent Messages\n(none yet)",
     ].join("\n");
-    console.log(`[room] AI prompt system=${systemPrompt.length}chars user="${userPrompt.slice(0, 80)}"`);
+    const tsRange = selected.length > 0
+      ? `${new Date(selected[0].ts).toISOString()} → ${new Date(selected[selected.length - 1].ts).toISOString()}`
+      : "none";
+    console.log(
+      `[room] AI context: total_history=${this.history.length} selected=${selected.length} range=${tsRange} loaded=${this.loaded} prompt_user="${userPrompt.slice(0, 80)}"`,
+    );
     const result = await this.env.AI.run(AI_MODEL, {
       messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
     });
