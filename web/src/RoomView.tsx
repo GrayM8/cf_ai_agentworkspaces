@@ -60,6 +60,8 @@ export function RoomView({ roomId }: { roomId: string }) {
               artifacts={room.artifacts}
               artifactDetail={room.artifactDetail}
               roomId={roomId}
+              settings={room.settings}
+              onUpdateSettings={room.updateSettings}
               onAddMemory={room.addMemory}
               onRemoveMemory={room.removeMemory}
               onToggleTodo={room.toggleTodo}

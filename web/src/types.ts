@@ -27,4 +27,9 @@ export interface ArtifactFull extends ArtifactMeta {
   content: string;
 }
 
+export interface RoomSettings {
+  systemPrompt: string;
+  aiAutoRespond: boolean;
+}
+
 export type ConnectionStatus = "disconnected" | "connecting" | "connected";

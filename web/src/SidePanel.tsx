@@ -1,5 +1,5 @@
 import { type JSX, useState } from "react";
-import type { PinnedMemory, ArtifactMeta, ArtifactFull } from "./types";
+import type { PinnedMemory, ArtifactMeta, ArtifactFull, RoomSettings } from "./types";
 import { MemoryTab } from "./MemoryTab";
 import { ArtifactsTab } from "./ArtifactsTab";
 import { RoomTab } from "./RoomTab";
@@ -12,6 +12,8 @@ interface SidePanelProps {
   artifacts: ArtifactMeta[];
   artifactDetail: ArtifactFull | null;
   roomId: string;
+  settings: RoomSettings;
+  onUpdateSettings: (updates: Partial<RoomSettings>) => void;
   onAddMemory: (kind: "memories" | "todos", text: string) => void;
   onRemoveMemory: (kind: "memories" | "todos", index: number) => void;
   onToggleTodo: (index: number) => void;
@@ -88,7 +90,7 @@ export function SidePanel(props: SidePanelProps) {
             onCloseDetail={() => props.onSetArtifactDetail(null)}
           />
         )}
-        {tab === "room" && <RoomTab roomId={props.roomId} clientId={CLIENT_ID} />}
+        {tab === "room" && <RoomTab roomId={props.roomId} clientId={CLIENT_ID} settings={props.settings} onUpdateSettings={props.onUpdateSettings} />}
       </div>
     </div>
   );

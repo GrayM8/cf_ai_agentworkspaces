@@ -568,3 +568,16 @@ Task: Add memory/todo management controls and fix artifact deletion bug.
   Deleting an artifact doesn't remove it from the frontend list. The artifact_deleted handler in useRoom.ts references artifactDetail from a stale
   closure — use a functional updater instead.
 ```
+
+Prompt 13.
+```aiignore
+Add an @ mention autocomplete popup to the chat composer, mirroring the existing / slash command popup pattern (same keyboard navigation,         
+  positioning, and structure). Start with @ai as the only entry. Use sky-blue accent styling to differentiate it from the slash command popup.
+```
+
+Prompt 14.
+```aiignore
+Add room settings to the Room tab: (1) an editable system prompt textarea that syncs across clients, and (2) a toggle for AI response mode —      
+  "respond to all messages" vs "only when mentioned with @ai" (default: mention-only). Persist settings in durable storage, broadcast changes to all
+   clients, and reset them on /reset.  
+```

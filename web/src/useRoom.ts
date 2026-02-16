@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ChatMsg, PinnedMemory, ArtifactMeta, ArtifactFull, ConnectionStatus } from "./types";
+import type { ChatMsg, PinnedMemory, ArtifactMeta, ArtifactFull, RoomSettings, ConnectionStatus } from "./types";
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL ?? "http://localhost:8787";
 const PING_INTERVAL_MS = 15_000;
@@ -23,6 +23,7 @@ export function useRoom(roomId: string, displayName: string, autoConnect = false
   const [pinned, setPinned] = useState<PinnedMemory>({ memories: [], todos: [] });
   const [artifacts, setArtifacts] = useState<ArtifactMeta[]>([]);
   const [artifactDetail, setArtifactDetail] = useState<ArtifactFull | null>(null);
+  const [settings, setSettings] = useState<RoomSettings>({ systemPrompt: "", aiAutoRespond: false });
   const [exportData, setExportData] = useState<string | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
@@ -100,6 +101,9 @@ export function useRoom(roomId: string, displayName: string, autoConnect = false
           setArtifacts((prev) => prev.filter((a) => a.id !== msg.id));
           setArtifactDetail((prev) => prev?.id === msg.id ? null : prev);
           break;
+        case "settings_update":
+          setSettings(msg.settings);
+          break;
         case "export":
           setExportData(JSON.stringify(msg.data, null, 2));
           break;
@@ -138,6 +142,10 @@ export function useRoom(roomId: string, displayName: string, autoConnect = false
     send({ type: "memory.toggle", index });
   }, [send]);
 
+  const updateSettings = useCallback((updates: Partial<RoomSettings>) => {
+    send({ type: "settings.update", settings: updates });
+  }, [send]);
+
   const createArtifact = useCallback((opts: { mode: "ai" | "manual"; artifactType: string; title?: string; content?: string }) => {
     send({ type: "artifact.create", ...opts, user: displayNameRef.current });
   }, [send]);
@@ -152,7 +160,7 @@ export function useRoom(roomId: string, displayName: string, autoConnect = false
 
   return {
     messages, presence, status, pinned, artifacts, artifactDetail, setArtifactDetail,
-    exportData, setExportData,
+    settings, updateSettings, exportData, setExportData,
     connect, disconnect, sendChat, addMemory, removeMemory, toggleTodo,
     createArtifact, deleteArtifact, getArtifact, send,
   };
