@@ -494,3 +494,24 @@ Prompt 9.
   the existing scrollbar styles untouched.
 ```
 
+Prompt 10.
+```aiignore
+Redesign all room page components (Header, ChatPanel, SidePanel, MemoryTab, ArtifactsTab, RoomTab, ExportModal, RoomView) to match the aesthetic  
+  established in the Splash page redesign. Preserve all existing functionality. Use the CSS variable font stack (--font-display, --font-body,       
+  --font-mono) throughout. Apply these patterns consistently:                                                                                       
+   
+  - Inputs: border border-zinc-800 bg-zinc-950/60 focus:border-zinc-600 instead of ring- and solid bg-zinc-800                                      
+  - Primary actions: Emerald-600 buttons with hover/active states (replacing zinc-700)
+  - Header: Add the sparkle icon + serif title from Splash, room ID in a bordered mono pill, backdrop-blur bar, "Copied!" feedback on invite
+  - Chat messages: User initial avatars, sparkle icon for AI, system messages as divider lines, timestamps in mono HH:MM format, empty state with
+  icon and / hint, emerald send button
+  - Slash command popup: Add "Commands" header, bordered mono badges for command names, rounded-lg container with shadow
+  - Side panel tabs: Add SVG icons per tab, emerald accent on active tab instead of zinc-400 underline
+  - Memory/Artifacts tabs: Dashed-border empty states, bordered card-style list items, emerald "+ Add"/Save/Create buttons, emerald ring on active
+  type selectors
+  - Export modal: Backdrop-blur overlay, rounded-xl card, mono textarea, emerald copy button
+  - Connection states: Emerald spinner for connecting, X icon for failed, emerald retry button
+
+  Use backdrop-blur-sm and /60 border opacity throughout for atmospheric depth. Quick actions as bordered chips with transition hovers. All metadata
+   timestamps and IDs in var(--font-mono).
+```

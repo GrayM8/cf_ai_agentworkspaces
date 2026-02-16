@@ -47,7 +47,7 @@ export function RoomView({ roomId }: { roomId: string }) {
 
       {connected ? (
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col border-r border-zinc-800">
+          <div className="flex min-h-0 flex-1 flex-col border-r border-zinc-800/60">
             <ChatPanel
               messages={room.messages}
               onSend={room.sendChat}
@@ -70,15 +70,27 @@ export function RoomView({ roomId }: { roomId: string }) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-zinc-500">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
           {room.status === "connecting" ? (
-            <p>Connecting to room...</p>
+            <>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 ring-1 ring-zinc-800">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-emerald-500" />
+              </div>
+              <p className="text-sm text-zinc-500">Connecting to room...</p>
+            </>
           ) : (
             <>
-              <p>Failed to connect to room.</p>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 ring-1 ring-zinc-800">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+              </div>
+              <p className="text-sm text-zinc-500">Failed to connect to room.</p>
               <button
                 onClick={() => room.connect()}
-                className="rounded bg-zinc-800 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-700"
+                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
               >
                 Retry
               </button>
