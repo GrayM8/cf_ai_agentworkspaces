@@ -39,47 +39,51 @@ export function Header({
   };
 
   return (
-    <header className="flex items-center gap-3 border-b border-zinc-800/80 bg-zinc-950/80 px-5 py-2.5 backdrop-blur-sm">
-      {/* Brand */}
-      <div className="flex items-center gap-2.5">
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-emerald-600/15 ring-1 ring-emerald-500/20">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
-            <path d="M12 3l1.912 5.813a2 2 0 001.272 1.278L21 12l-5.816 1.91a2 2 0 00-1.272 1.277L12 21l-1.912-5.813a2 2 0 00-1.272-1.278L3 12l5.816-1.91a2 2 0 001.272-1.277z" />
-          </svg>
-        </div>
-        <span
-          className="text-base text-zinc-200"
-          style={{ fontFamily: "var(--font-display)" }}
+    <header className="flex items-center gap-4 border-b border-zinc-800/80 bg-zinc-950/80 px-5 py-2.5 backdrop-blur-sm">
+      {/* Navigation breadcrumb */}
+      <nav className="flex items-center gap-2.5">
+        <button
+          onClick={onDisconnect}
+          className="flex items-center gap-2 transition hover:opacity-80"
+          title="Back to home"
         >
-          AgentWorkspaces
-        </span>
-      </div>
-
-      {/* Room ID */}
-      <div className="flex items-center gap-1.5 rounded border border-zinc-800/60 bg-zinc-900/50 px-2.5 py-1">
-        <span className="text-[10px] uppercase tracking-widest text-zinc-600">Room</span>
+          <div className="flex h-6 w-6 items-center justify-center rounded bg-emerald-600/15 ring-1 ring-emerald-500/20">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
+              <path d="M12 3l1.912 5.813a2 2 0 001.272 1.278L21 12l-5.816 1.91a2 2 0 00-1.272 1.277L12 21l-1.912-5.813a2 2 0 00-1.272-1.278L3 12l5.816-1.91a2 2 0 001.272-1.277z" />
+            </svg>
+          </div>
+          <span
+            className="text-base text-zinc-200"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            AgentWorkspaces
+          </span>
+        </button>
+        <span className="text-xs text-zinc-700">/</span>
         <span
           className="text-xs text-zinc-400"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           {roomId}
         </span>
+      </nav>
+
+      {/* Divider */}
+      <div className="h-4 w-px bg-zinc-800" />
+
+      {/* User identity */}
+      <div className="flex items-center gap-1.5 rounded border border-zinc-800/60 bg-zinc-900/50 px-2.5 py-1">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-zinc-600">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        <input
+          className="w-24 bg-transparent text-xs text-zinc-300 outline-none placeholder:text-zinc-600"
+          placeholder="Display name"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
       </div>
-
-      {/* Display name */}
-      <input
-        className="w-28 rounded border border-zinc-800/60 bg-zinc-900/50 px-2.5 py-1 text-xs text-zinc-300 outline-none transition focus:border-zinc-600 focus:bg-zinc-900"
-        placeholder="Display name"
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-      />
-
-      <button
-        onClick={onDisconnect}
-        className="rounded border border-zinc-800/60 px-3 py-1 text-xs text-zinc-500 transition hover:border-zinc-700 hover:text-zinc-300"
-      >
-        Leave
-      </button>
 
       {/* Right side */}
       <div className="ml-auto flex items-center gap-4">
