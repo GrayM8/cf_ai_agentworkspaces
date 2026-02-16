@@ -151,4 +151,5 @@ This is a portfolio project built to demonstrate Cloudflare's edge platform, not
 
 Thanks for taking the time to review this project! It was genuinely fun to build — getting Durable Objects, Workers AI, and tool calling all working together on the edge was a great experience. I appreciate the consideration for the internship and look forward to hearing from the team.
 
-— [Gray Marshall]([url](https://www.graymarshall.dev/))
+— Gray Marshall
+https://www.graymarshall.dev/
