@@ -456,3 +456,8 @@ Fix layout so the right SidePanel does NOT scroll away with chat. Only the chat 
 add markdown rendering for AI outputs and artifact content using @tailwindcss/typography and `react-markdown` + `remark-gfm` as necessary. Do   
 NOT enable raw HTML.
 ```
+
+Prompt 8.
+```aiignore
+Create a popup from the chat interface that appears when / is typed, displaying all of the defined / commands and their functionality.
+```

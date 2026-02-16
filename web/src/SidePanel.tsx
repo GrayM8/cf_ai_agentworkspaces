@@ -61,7 +61,7 @@ export function SidePanel(props: SidePanelProps) {
             onCloseDetail={() => props.onSetArtifactDetail(null)}
           />
         )}
-        {tab === "room" && <RoomTab roomId={props.roomId} clientId={CLIENT_ID} isOwner={props.isOwner} />}
+        {tab === "room" && <RoomTab roomId={props.roomId} clientId={CLIENT_ID} />}
       </div>
     </div>
   );

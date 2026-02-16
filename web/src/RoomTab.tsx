@@ -1,10 +1,9 @@
 interface RoomTabProps {
   roomId: string;
   clientId: string;
-  isOwner: boolean;
 }
 
-export function RoomTab({ roomId, clientId, isOwner }: RoomTabProps) {
+export function RoomTab({ roomId, clientId }: RoomTabProps) {
   const inviteUrl = `${window.location.origin}/r/${encodeURIComponent(roomId)}`;
 
   return (
@@ -25,11 +24,6 @@ export function RoomTab({ roomId, clientId, isOwner }: RoomTabProps) {
             Copy
           </button>
         </div>
-      </section>
-
-      <section>
-        <h3 className="mb-1 font-semibold uppercase tracking-wider text-zinc-500">Your Role</h3>
-        <p className="text-zinc-400">{isOwner ? "Owner" : "Member"}</p>
       </section>
 
       <section>
