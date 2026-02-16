@@ -12,7 +12,10 @@ const SLASH_COMMANDS: { command: string; args?: string; description: string }[] 
   { command: "/export", description: "Export all room data as JSON" },
   { command: "/reset", description: "Clear all messages, memories, and artifacts" },
   { command: "/summarize", description: "Ask AI to summarize the recent discussion" },
-  { command: "@ai", args: "<prompt>", description: "Ask the AI a question" },
+];
+
+const AT_MENTIONS: { mention: string; args?: string; description: string }[] = [
+  { mention: "@ai", args: "<prompt>", description: "Ask the AI a question or give it a task" },
 ];
 
 interface MessageGroup {
@@ -57,13 +60,21 @@ export function ChatPanel({ messages, onSend, connected }: ChatPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const groups = groupMessages(messages);
 
-  const filtered = useMemo(() => {
+  const filteredSlash = useMemo(() => {
     if (!input.startsWith("/") || input.includes(" ")) return [];
     const q = input.toLowerCase();
     return SLASH_COMMANDS.filter((c) => c.command.toLowerCase().startsWith(q));
   }, [input]);
 
-  const showPopup = filtered.length > 0;
+  const filteredAt = useMemo(() => {
+    if (!input.startsWith("@") || input.includes(" ")) return [];
+    const q = input.toLowerCase();
+    return AT_MENTIONS.filter((c) => c.mention.toLowerCase().startsWith(q));
+  }, [input]);
+
+  const popupMode = filteredSlash.length > 0 ? "slash" as const : filteredAt.length > 0 ? "at" as const : null;
+  const showPopup = popupMode !== null;
+  const filtered = popupMode === "slash" ? filteredSlash : filteredAt;
 
   useEffect(() => { setSelectedIdx(0); }, [filtered.length]);
 
@@ -71,8 +82,9 @@ export function ChatPanel({ messages, onSend, connected }: ChatPanelProps) {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const selectCommand = useCallback((cmd: typeof SLASH_COMMANDS[number]) => {
-    setInput(cmd.args ? cmd.command + " " : cmd.command);
+  const selectItem = useCallback((item: { command?: string; mention?: string; args?: string }) => {
+    const key = item.command ?? item.mention ?? "";
+    setInput(item.args ? key + " " : key);
     textareaRef.current?.focus();
   }, []);
 
@@ -90,7 +102,7 @@ export function ChatPanel({ messages, onSend, connected }: ChatPanelProps) {
       }
       if (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey)) {
         e.preventDefault();
-        selectCommand(filtered[selectedIdx]);
+        selectItem(filtered[selectedIdx]);
         return;
       }
       if (e.key === "Escape") {
@@ -103,7 +115,7 @@ export function ChatPanel({ messages, onSend, connected }: ChatPanelProps) {
       e.preventDefault();
       if (input.trim()) { onSend(input.trim()); setInput(""); }
     }
-  }, [input, onSend, showPopup, filtered, selectedIdx, selectCommand]);
+  }, [input, onSend, showPopup, filtered, selectedIdx, selectItem]);
 
   const prefill = (prefix: string) => setInput(prefix);
 
@@ -171,31 +183,40 @@ export function ChatPanel({ messages, onSend, connected }: ChatPanelProps) {
 
       {/* Composer */}
       <div className="relative border-t border-zinc-800/60 bg-zinc-950/50 p-4 backdrop-blur-sm">
-        {/* Slash command popup */}
+        {/* Command / mention popup */}
         {showPopup && (
           <div className="absolute bottom-full left-3 right-3 z-10 mb-2 overflow-hidden rounded-lg border border-zinc-800/60 bg-zinc-900 shadow-xl shadow-black/30">
             <div className="border-b border-zinc-800/40 px-3 py-1.5">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-600">Commands</span>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-600">
+                {popupMode === "slash" ? "Commands" : "Mentions"}
+              </span>
             </div>
-            {filtered.map((cmd, i) => (
-              <button
-                key={cmd.command}
-                className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors ${i === selectedIdx ? "bg-zinc-800/70" : "hover:bg-zinc-800/40"}`}
-                onMouseDown={(e) => { e.preventDefault(); selectCommand(cmd); }}
-                onMouseEnter={() => setSelectedIdx(i)}
-              >
-                <span
-                  className="rounded border border-zinc-700/50 bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300"
-                  style={{ fontFamily: "var(--font-mono)" }}
+            {filtered.map((item, i) => {
+              const key = "command" in item ? (item as { command: string }).command : (item as { mention: string }).mention;
+              return (
+                <button
+                  key={key}
+                  className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors ${i === selectedIdx ? "bg-zinc-800/70" : "hover:bg-zinc-800/40"}`}
+                  onMouseDown={(e) => { e.preventDefault(); selectItem(item); }}
+                  onMouseEnter={() => setSelectedIdx(i)}
                 >
-                  {cmd.command}
-                </span>
-                {cmd.args && (
-                  <span className="text-[11px] text-zinc-600" style={{ fontFamily: "var(--font-mono)" }}>{cmd.args}</span>
-                )}
-                <span className="ml-auto text-[11px] text-zinc-600">{cmd.description}</span>
-              </button>
-            ))}
+                  <span
+                    className={`rounded border px-1.5 py-0.5 text-xs ${
+                      popupMode === "at"
+                        ? "border-sky-900/40 bg-sky-950/50 text-sky-400"
+                        : "border-zinc-700/50 bg-zinc-800 text-zinc-300"
+                    }`}
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {key}
+                  </span>
+                  {item.args && (
+                    <span className="text-[11px] text-zinc-600" style={{ fontFamily: "var(--font-mono)" }}>{item.args}</span>
+                  )}
+                  <span className="ml-auto text-[11px] text-zinc-600">{item.description}</span>
+                </button>
+              );
+            })}
           </div>
         )}
 
